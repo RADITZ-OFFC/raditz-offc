@@ -1,4 +1,4 @@
-import React, { useEffect, memo, useMemo } from "react"
+import React, { useEffect, memo, useMemo, useState } from "react"
 import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, UserCheck } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
@@ -113,21 +113,27 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 ));
 
 const AboutPage = () => {
-  // Memoized calculations
-  const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
-    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-    const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
-    
-    const startDate = new Date("2021-11-06");
-    const today = new Date();
-    const experience = today.getFullYear() - startDate.getFullYear() -
-      (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalCertificates, setTotalCertificates] = useState(0);
 
-    return {
-      totalProjects: storedProjects.length,
-      totalCertificates: storedCertificates.length,
-      YearExperience: experience
+  const YearExperience = useMemo(() => {
+    const startDate = new Date("2023-03-29");
+    const today = new Date();
+    return today.getFullYear() - startDate.getFullYear() -
+      (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
+  }, []);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const { supabase } = await import('../supabase');
+      const [{ count: pCount }, { count: cCount }] = await Promise.all([
+        supabase.from('projects').select('*', { count: 'exact', head: true }),
+        supabase.from('certificates').select('*', { count: 'exact', head: true }),
+      ]);
+      setTotalProjects(pCount || 0);
+      setTotalCertificates(cCount || 0);
     };
+    fetchCounts();
   }, []);
 
   // Optimized AOS initialization
