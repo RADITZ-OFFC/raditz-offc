@@ -42,8 +42,8 @@ This project is built using modern web technologies:
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/EkiZR/Portofolio_V5.git
-cd Portofolio_V5
+git clone https://github.com/RADITZ-OFFC/raditz-offc.git
+cd raditz-offc
 npm install
 ```
 
